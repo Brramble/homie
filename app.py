@@ -75,6 +75,12 @@ def init_db():
     except:
         pass  # Column already exists
     
+    # Add last_activity column to track real-time user activity
+    try:
+        conn.execute('ALTER TABLE users ADD COLUMN last_activity TIMESTAMP')
+    except:
+        pass  # Column already exists
+    
     # Signup tokens table for admin-generated registration links
     conn.execute('''
         CREATE TABLE IF NOT EXISTS signup_tokens (
@@ -155,11 +161,21 @@ def init_db():
     conn.close()
 
 def login_required(f):
-    """Decorator to require login for certain routes"""
+    """Decorator to require login for certain routes and track user activity"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             return redirect(url_for('login'))
+        
+        # Update user's last activity timestamp on every page load
+        conn = get_db_connection()
+        conn.execute(
+            'UPDATE users SET last_activity = ? WHERE id = ?',
+            (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), session['user_id'])
+        )
+        conn.commit()
+        conn.close()
+        
         return f(*args, **kwargs)
     return decorated_function
 
@@ -259,6 +275,40 @@ def index():
         except:
             activity['time'] = 'Recently'
     
+    # Get all users with their last activity for members list
+    users = conn.execute('''
+        SELECT username, last_activity, created_at
+        FROM users
+        ORDER BY last_activity DESC NULLS LAST
+    ''').fetchall()
+    
+    # Format last activity as online/offline status
+    formatted_users = []
+    now = datetime.now()
+    
+    for user in users:
+        formatted_user = dict(user)
+        if user['last_activity']:
+            try:
+                activity_time = datetime.strptime(user['last_activity'], '%Y-%m-%d %H:%M:%S')
+                time_diff = now - activity_time
+                
+                # Consider user online if active within last 5 minutes
+                if time_diff.total_seconds() <= 300:  # 5 minutes = 300 seconds
+                    formatted_user['status'] = 'online'
+                    formatted_user['status_text'] = 'Online now'
+                else:
+                    formatted_user['status'] = 'offline' 
+                    formatted_user['status_text'] = 'Offline'
+                        
+            except:
+                formatted_user['status'] = 'offline'
+                formatted_user['status_text'] = 'Offline'
+        else:
+            formatted_user['status'] = 'never'
+            formatted_user['status_text'] = 'Never logged in'
+        formatted_users.append(formatted_user)
+    
     conn.close()
     
     return render_template('dashboard.html', 
@@ -266,7 +316,8 @@ def index():
                          chores_count=chores_count,
                          expiring_count=expiring_count,
                          monthly_total=monthly_total,
-                         recent_activities=recent_activities)
+                         recent_activities=recent_activities,
+                         users=formatted_users)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

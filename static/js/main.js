@@ -12,6 +12,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Theme toggle
     if (themeToggle) {
+        // Set initial state of toggle based on current theme
+        const updateToggleState = () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            themeToggle.setAttribute('aria-checked', isDark ? 'true' : 'false');
+        };
+        
+        // Set initial state
+        updateToggleState();
+        
         themeToggle.addEventListener('click', function() {
             const currentlyDark = document.documentElement.classList.contains('dark');
             
@@ -22,6 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.documentElement.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
             }
+            
+            // Update toggle state
+            updateToggleState();
         });
     }
 

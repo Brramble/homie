@@ -55,6 +55,41 @@
         </div>
     </div>
 
+    <!-- Appearance -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-8">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                Appearance
+            </h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Customize how Homie looks for you.
+            </p>
+        </div>
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Theme
+                    </label>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Choose between light and dark mode.
+                    </p>
+                </div>
+                <button id="theme-toggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 dark:bg-gray-600 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800" role="switch" aria-checked="false">
+                    <span class="sr-only">Toggle theme</span>
+                    <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 dark:translate-x-5">
+                        <span class="absolute inset-0 flex h-full w-full items-center justify-center transition-opacity duration-200 ease-in opacity-100 dark:opacity-0">
+                            <i class="fas fa-sun text-xs text-yellow-500"></i>
+                        </span>
+                        <span class="absolute inset-0 flex h-full w-full items-center justify-center transition-opacity duration-200 ease-in opacity-0 dark:opacity-100">
+                            <i class="fas fa-moon text-xs text-blue-400"></i>
+                        </span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Change Password -->
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">

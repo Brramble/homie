@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Homie - Family Utility App{% endblock %}</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234F46E5'%3e%3cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3e%3c/svg%3e">
+    <link rel="alternate icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234F46E5'%3e%3cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3e%3c/svg%3e">
+    
     <!-- Theme Script - Must run before any content renders -->
     <script>
         // Immediately apply dark mode if set, before any content renders
@@ -82,12 +86,6 @@
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <!-- Theme Toggle -->
-                        <button id="theme-toggle" class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg">
-                            <i class="fas fa-moon dark:hidden"></i>
-                            <i class="fas fa-sun hidden dark:inline"></i>
-                        </button>
-                        
                         <!-- User Menu -->
                         <div class="relative">
                             <button id="user-menu-button" class="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg p-2">
@@ -150,11 +148,11 @@
             {% if messages %}
                 <div class="fixed top-20 right-4 z-50 space-y-2">
                     {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 px-4 py-3 rounded relative max-w-sm">
+                        <div class="alert alert-{{ category }} bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 px-4 py-3 pr-12 rounded relative max-w-sm">
                             <span class="block sm:inline">{{ message }}</span>
-                            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                <i class="fas fa-times cursor-pointer" onclick="this.parentElement.parentElement.remove()"></i>
-                            </span>
+                            <button class="absolute top-2 right-2 p-1 hover:bg-green-200 dark:hover:bg-green-800 rounded transition-colors" onclick="this.parentElement.remove()">
+                                <i class="fas fa-times text-sm"></i>
+                            </button>
                         </div>
                     {% endfor %}
                 </div>
