@@ -1,0 +1,33 @@
+{
+  "name": "Homie - Family Utility App",
+  "short_name": "Homie",
+  "description": "Your family's utility app for managing shopping lists, chores, bills, and expiry dates",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%234F46E5'%3e%3crect width='512' height='512' rx='64' fill='%23ffffff'/%3e%3cpath d='M213.33 426.67v-128h85.33v128h106.67V256h64L256 64 42.67 256h64v170.67z' fill='%234F46E5'/%3e%3c/svg%3e",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192' fill='%234F46E5'%3e%3crect width='192' height='192' rx='20' fill='%23ffffff'/%3e%3cpath d='M80 160v-32h32v32h40v-53.33h20.33L96 32 19.67 106.67H40V160z' fill='%234F46E5'/%3e%3c/svg%3e",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180' fill='%234F46E5'%3e%3crect width='180' height='180' fill='%23ffffff'/%3e%3cpath d='M75 150v-45h30v45h37.5v-60h22.5L90 22.5 15 90h22.5v60z' fill='%234F46E5'/%3e%3c/svg%3e",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "apple-touch-icon"
+    }
+  ]
+}

@@ -2,12 +2,31 @@
 <html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}Homie - Family Utility App{% endblock %}</title>
+    <meta name="description" content="Homie - Your family's utility app for managing shopping lists, chores, bills, and expiry dates">
     
-    <!-- Favicon -->
+    <!-- Apple iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Homie">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="msapplication-navbutton-color" content="#4F46E5">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180' fill='%234F46E5'%3e%3crect width='180' height='180' fill='%23ffffff'/%3e%3cpath d='M75 150v-45h30v45h37.5v-60h22.5L90 22.5 15 90h22.5v60z' fill='%234F46E5'/%3e%3c/svg%3e">
+    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152 152' fill='%234F46E5'%3e%3crect width='152' height='152' fill='%23ffffff'/%3e%3cpath d='M63.33 127v-38h25.33v38h31.67v-50.67h19L76 19 19 76h19v51z' fill='%234F46E5'/%3e%3c/svg%3e">
+    <link rel="apple-touch-icon" sizes="120x120" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120' fill='%234F46E5'%3e%3crect width='120' height='120' fill='%23ffffff'/%3e%3cpath d='M50 100v-30h20v30h25v-40h15L60 15 15 60h15v40z' fill='%234F46E5'/%3e%3c/svg%3e">
+    <link rel="apple-touch-icon" sizes="76x76" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 76 76' fill='%234F46E5'%3e%3crect width='76' height='76' fill='%23ffffff'/%3e%3cpath d='M31.67 63.33v-19h12.67v19h15.83v-25.33h9.5L38 9.5 9.5 38h9.5v25.33z' fill='%234F46E5'/%3e%3c/svg%3e">
+    
+    <!-- Standard Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234F46E5'%3e%3cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3e%3c/svg%3e">
     <link rel="alternate icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234F46E5'%3e%3cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3e%3c/svg%3e">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     
     <!-- Theme Script - Must run before any content renders -->
     <script>
@@ -30,6 +49,58 @@
         }
         html.dark {
             background-color: #111827; /* dark mode background */
+        }
+        
+        /* iOS Safari specific styles */
+        @supports (-webkit-touch-callout: none) {
+            /* iOS-specific styles */
+            body {
+                -webkit-user-select: none;
+                user-select: none;
+                -webkit-touch-callout: none;
+                -webkit-tap-highlight-color: transparent;
+            }
+            
+            /* Allow text selection for inputs and content areas */
+            input, textarea, [contenteditable] {
+                -webkit-user-select: auto;
+                user-select: auto;
+            }
+            
+            /* Better button touch targets for iOS */
+            button, .btn, a[role="button"] {
+                min-height: 44px;
+                min-width: 44px;
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+            }
+            
+            /* Handle iPhone X+ safe areas */
+            .safe-area-top {
+                padding-top: env(safe-area-inset-top);
+            }
+            
+            .safe-area-bottom {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            
+            /* Improve scrolling on iOS */
+            .ios-scroll {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+        
+        /* PWA fullscreen mode adjustments */
+        @media all and (display-mode: standalone) {
+            /* Hide any browser-specific elements when in PWA mode */
+            .pwa-hidden {
+                display: none;
+            }
+            
+            /* Adjust for status bar in standalone mode */
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
         }
     </style>
     
@@ -65,7 +136,7 @@
         }
     </style>
 </head>
-<body class="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+<body class="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300 ios-scroll">
     <div class="min-h-full">
         {% if session.user_id %}
         <!-- Navigation -->

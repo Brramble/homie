@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
@@ -434,6 +434,11 @@ def logout():
     session.clear()
     flash('You have been logged out', 'info')
     return redirect(url_for('login'))
+
+@app.route('/manifest.json')
+def manifest():
+    """Serve PWA manifest file"""
+    return send_from_directory('static', 'manifest.json', mimetype='application/json')
 
 @app.route('/shopping')
 @login_required

@@ -6,68 +6,183 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
 
-    // Theme is already applied in the head script, so no need to reapply here
-    // Just ensure the toggle button shows the correct state
-    const isDark = document.documentElement.classList.contains('dark');
-    
-    // Theme toggle
-    if (themeToggle) {
-        // Set initial state of toggle based on current theme
-        const updateToggleState = () => {
-            const isDark = document.documentElement.classList.contains('dark');
-            themeToggle.setAttribute('aria-checked', isDark ? 'true' : 'false');
-        };
+    // Theme is already applied in the    // Toggle clicked menu
+    if (isHidden) {
+        menu.classList.remove('hidden');
+    } else {
+        menu.classList.add('hidden');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.action-dropdown')) {
+        document.querySelectorAll('.action-menu').forEach(menu => {
+            menu.classList.add('hidden');
+        });
+    }
+});
+
+// iOS PWA and WebKit Support
+document.addEventListener('DOMContentLoaded', function() {
+    // iOS PWA Installation Banner
+    let deferredPrompt;
+    let installBanner = null;
+
+    // Check if running in iOS Safari
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+
+    // Show iOS installation instructions if not in standalone mode
+    if (isIOS && !isInStandaloneMode) {
+        // Create installation banner for iOS
+        setTimeout(() => {
+            showIOSInstallBanner();
+        }, 5000); // Show after 5 seconds
+    }
+
+    // Handle PWA install prompt for other browsers
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
         
-        // Set initial state
-        updateToggleState();
+        // Show installation banner for non-iOS devices
+        if (!isIOS) {
+            showPWAInstallBanner();
+        }
+    });
+
+    // iOS-specific touch handling improvements
+    if (isIOS) {
+        // Improve touch responsiveness
+        document.addEventListener('touchstart', function() {}, { passive: true });
         
-        themeToggle.addEventListener('click', function() {
-            const currentlyDark = document.documentElement.classList.contains('dark');
+        // Prevent zoom on double tap for form elements
+        document.addEventListener('touchend', function(event) {
+            const now = new Date().getTime();
+            const timeSince = now - lastTouchEnd;
             
-            if (currentlyDark) {
-                document.documentElement.classList.remove('dark');
-                document.documentElement.style.colorScheme = 'light';
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.documentElement.classList.add('dark');
-                document.documentElement.style.colorScheme = 'dark';
-                localStorage.setItem('theme', 'dark');
+            if ((timeSince < 300) && (timeSince > 40)) {
+                event.preventDefault();
             }
             
-            // Update toggle state
-            updateToggleState();
+            lastTouchEnd = now;
+        }, false);
+        
+        let lastTouchEnd = 0;
+        
+        // Viewport height fix for iOS address bar
+        function setVH() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        
+        setVH();
+        window.addEventListener('resize', setVH);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(setVH, 100);
         });
     }
 
-    // User menu toggle
-    if (userMenuButton && userMenu) {
-        userMenuButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            userMenu.classList.toggle('hidden');
-        });
+    function showIOSInstallBanner() {
+        if (localStorage.getItem('ios-install-dismissed') === 'true') {
+            return;
+        }
 
-        // Close user menu when clicking outside
-        document.addEventListener('click', function() {
-            userMenu.classList.add('hidden');
-        });
-    }
-
-    // Mobile menu toggle
-    if (mobileMenuButton && mobileMenu) {
-        mobileMenuButton.addEventListener('click', function() {
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
-
-    // Auto-hide flash messages after 5 seconds
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
+        const banner = document.createElement('div');
+        banner.id = 'ios-install-banner';
+        banner.className = 'fixed bottom-4 left-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg z-50 transform transition-transform duration-300 translate-y-full';
+        banner.innerHTML = `
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <h3 class="font-semibold text-sm">Install Homie App</h3>
+                    <p class="text-xs mt-1 opacity-90">
+                        Tap <i class="fas fa-share text-blue-200"></i> then "Add to Home Screen" for the best experience
+                    </p>
+                </div>
+                <button onclick="dismissIOSBanner()" class="ml-2 text-blue-200 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(banner);
+        
+        // Animate in
         setTimeout(() => {
-            alert.style.opacity = '0';
-            alert.style.transform = 'translateX(100%)';
-            setTimeout(() => alert.remove(), 300);
-        }, 5000);
-    });
+            banner.classList.remove('translate-y-full');
+        }, 100);
+        
+        // Auto-dismiss after 10 seconds
+        setTimeout(() => {
+            dismissIOSBanner();
+        }, 10000);
+    }
+
+    function showPWAInstallBanner() {
+        if (localStorage.getItem('pwa-install-dismissed') === 'true') {
+            return;
+        }
+
+        const banner = document.createElement('div');
+        banner.id = 'pwa-install-banner';
+        banner.className = 'fixed bottom-4 left-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg z-50 transform transition-transform duration-300 translate-y-full';
+        banner.innerHTML = `
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <h3 class="font-semibold text-sm">Install Homie App</h3>
+                    <p class="text-xs mt-1 opacity-90">Get the full app experience</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="installPWA()" class="bg-white text-blue-600 px-3 py-1 rounded text-xs font-medium hover:bg-blue-50">
+                        Install
+                    </button>
+                    <button onclick="dismissPWABanner()" class="text-blue-200 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(banner);
+        
+        // Animate in
+        setTimeout(() => {
+            banner.classList.remove('translate-y-full');
+        }, 100);
+    }
+
+    // Global functions for banner actions
+    window.dismissIOSBanner = function() {
+        const banner = document.getElementById('ios-install-banner');
+        if (banner) {
+            banner.classList.add('translate-y-full');
+            setTimeout(() => banner.remove(), 300);
+            localStorage.setItem('ios-install-dismissed', 'true');
+        }
+    };
+
+    window.dismissPWABanner = function() {
+        const banner = document.getElementById('pwa-install-banner');
+        if (banner) {
+            banner.classList.add('translate-y-full');
+            setTimeout(() => banner.remove(), 300);
+            localStorage.setItem('pwa-install-dismissed', 'true');
+        }
+    };
+
+    window.installPWA = function() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('PWA installation accepted');
+                }
+                deferredPrompt = null;
+                dismissPWABanner();
+            });
+        }
+    };
 });
 
 // Utility functions
