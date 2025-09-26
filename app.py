@@ -1203,6 +1203,38 @@ def clear_recent_activity():
     flash('Recent activity cleared successfully.', 'success')
     return redirect(url_for('index'))
 
+@app.route('/delete_all_completed_shopping', methods=['POST'])
+@login_required
+def delete_all_completed_shopping():
+    conn = get_db_connection()
+    
+    # Delete all completed shopping items for the current user
+    conn.execute(
+        'DELETE FROM shopping_items WHERE added_by = ? AND completed = 1',
+        (session['user_id'],)
+    )
+    conn.commit()
+    conn.close()
+    
+    flash('All completed shopping items deleted successfully.', 'success')
+    return redirect(url_for('shopping_list'))
+
+@app.route('/delete_all_completed_chores', methods=['POST'])
+@login_required
+def delete_all_completed_chores():
+    conn = get_db_connection()
+    
+    # Delete all completed chores for the current user
+    conn.execute(
+        'DELETE FROM chores WHERE added_by = ? AND completed = 1',
+        (session['user_id'],)
+    )
+    conn.commit()
+    conn.close()
+    
+    flash('All completed chores deleted successfully.', 'success')
+    return redirect(url_for('chores'))
+
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)

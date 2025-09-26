@@ -234,9 +234,10 @@ function moveItemToActiveList(itemId, itemData, itemRow) {
 }
 
 function updateItemCounters() {
-    // Update active items counter
-    const activeItems = document.querySelectorAll('.bg-white.dark\\:bg-gray-800 .item-row');
-    const activeCounter = document.querySelector('.text-sm.text-gray-500.dark\\:text-gray-400');
+    // Update active items counter - only count items in the main active list, not completed section
+    const activeItemsList = document.querySelector('.bg-white.dark\\:bg-gray-800 .divide-y');
+    const activeItems = activeItemsList ? activeItemsList.querySelectorAll('.item-row') : [];
+    const activeCounter = document.querySelector('.shopping-item-counter');
     if (activeCounter) {
         const count = activeItems.length;
         activeCounter.textContent = `${count} item${count !== 1 ? 's' : ''}`;
@@ -401,9 +402,10 @@ function moveChoreToActiveList(choreId, choreData, choreRow) {
 }
 
 function updateChoreCounters() {
-    // Update active chores counter
-    const activeChores = document.querySelectorAll('.bg-white.dark\\:bg-gray-800 .item-row');
-    const activeCounter = document.querySelector('.text-sm.text-gray-500.dark\\:text-gray-400');
+    // Update active chores counter - only count items in the main active list, not completed section
+    const activeChoresList = document.querySelector('.bg-white.dark\\:bg-gray-800 .divide-y');
+    const activeChores = activeChoresList ? activeChoresList.querySelectorAll('.item-row') : [];
+    const activeCounter = document.querySelector('.chores-item-counter');
     if (activeCounter) {
         const count = activeChores.length;
         activeCounter.textContent = `${count} chore${count !== 1 ? 's' : ''}`;
