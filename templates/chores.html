@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Chores - Homie{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+            <i class="fas fa-tasks mr-3 text-green-600"></i>Chores
+        </h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+            Keep track of household chores and responsibilities.
+        </p>
+    </div>
+
+    <!-- Add Chore Form -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-8">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                Add New Chore
+            </h3>
+        </div>
+        <div class="p-6">
+            <form method="POST" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="chore_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Chore Name *
+                        </label>
+                        <input type="text" name="chore_name" id="chore_name" required
+                               class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                               placeholder="e.g., Vacuum living room">
+                    </div>
+                    <div>
+                        <label for="assigned_to" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Assign to
+                        </label>
+                        <select name="assigned_to" id="assigned_to"
+                                class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                            <option value="">Anyone can do it</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.username|title_case }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Description (optional)
+                    </label>
+                    <textarea name="description" id="description" rows="2"
+                              class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                              placeholder="Any additional details..."></textarea>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit"
+                            class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Add Chore
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chores List -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                    Current Chores
+                </h3>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ chores|length }} chore{{ 's' if chores|length != 1 else '' }}
+                </div>
+            </div>
+        </div>
+        <div class="divide-y divide-gray-200 dark:divide-gray-700">
+            {% if chores %}
+                {% for chore in chores %}
+                <div class="item-row p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start space-x-4">
+                            <button onclick="toggleComplete({{ chore.id }}, 'chore', this)"
+                                    class="flex-shrink-0 h-5 w-5 rounded border-2 {{ 'bg-green-500 border-green-500' if chore.completed else 'border-gray-300 dark:border-gray-600' }} focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors mt-1">
+                                {% if chore.completed %}
+                                <i class="fas fa-check text-white text-xs"></i>
+                                {% endif %}
+                            </button>
+                            <div class="flex-grow">
+                                <h4 class="text-lg font-medium {{ 'line-through text-gray-500 dark:text-gray-400' if chore.completed else 'text-gray-900 dark:text-white' }}">
+                                    {{ chore.chore_name }}
+                                </h4>
+                                {% if chore.description %}
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    {{ chore.description }}
+                                </p>
+                                {% endif %}
+                                <div class="flex items-center space-x-4 mt-2">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        Added by {{ chore.added_by_username|title_case }}
+                                        <span class="text-xs">{{ chore.created_at.strftime('%B %d, %Y') }}</span>
+                                    </p>
+                                    {% if chore.assigned_to %}
+                                    <p class="text-sm text-blue-600 dark:text-blue-400">
+                                        <i class="fas fa-user mr-1"></i>
+                                        Assigned to {{ chore.assigned_to_username|title_case }}
+                                    </p>
+                                    {% else %}
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        <i class="fas fa-users mr-1"></i>
+                                        Anyone can do
+                                    </p>
+                                    {% endif %}
+                                    {% if chore.completed %}
+                                    <p class="text-sm text-green-600 dark:text-green-400">
+                                        <i class="fas fa-check-circle mr-1"></i>
+                                        Completed by {{ chore.completed_by_username|title_case }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <!-- Actions Dropdown for all devices -->
+                            <div class="relative action-dropdown">
+                                <button onclick="toggleActionMenu('chore-menu-{{ chore.id }}')"
+                                        class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div id="chore-menu-{{ chore.id }}" class="action-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-20 border border-gray-200 dark:border-gray-600">
+                                    {% if not chore.completed %}
+                                    <button onclick="toggleComplete({{ chore.id }}, 'chore', this)"
+                                            class="block w-full text-left px-4 py-2 text-sm text-green-600 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md transition-colors">
+                                        <i class="fas fa-check mr-2"></i>Mark Done
+                                    </button>
+                                    {% else %}
+                                    <button onclick="toggleComplete({{ chore.id }}, 'chore', this)"
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md transition-colors">
+                                        <i class="fas fa-undo mr-2"></i>Undo
+                                    </button>
+                                    {% endif %}
+                                    <button onclick="deleteItem({{ chore.id }}, 'chore', this)"
+                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md transition-colors border-t border-gray-200 dark:border-gray-600">
+                                        <i class="fas fa-trash mr-2"></i>Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="p-12 text-center">
+                <i class="fas fa-tasks text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    No chores assigned
+                </h3>
+                <p class="text-gray-500 dark:text-gray-400">
+                    Add your first chore using the form above.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if completed_chores %}
+    <!-- Completed Chores -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg mt-8">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <button onclick="document.getElementById('completed-chores-section').classList.toggle('hidden')"
+                    class="flex items-center justify-between w-full text-left">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                    Recently Completed Chores
+                </h3>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ completed_chores|length }} completed</span>
+                    <i class="fas fa-chevron-down text-gray-400"></i>
+                </div>
+            </button>
+        </div>
+        <div id="completed-chores-section" class="hidden divide-y divide-gray-200 dark:divide-gray-700">
+            {% for chore in completed_chores %}
+            <div class="item-row p-6 bg-gray-50 dark:bg-gray-700">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-4">
+                        <button onclick="toggleComplete({{ chore.id }}, 'chore', this)"
+                                class="flex-shrink-0 h-5 w-5 rounded bg-green-500 border-green-500 flex items-center justify-center hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors cursor-pointer mt-1">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </button>
+                        <div>
+                            <h4 class="text-lg font-medium line-through text-gray-500 dark:text-gray-400">
+                                {{ chore.chore_name }}
+                            </h4>
+                            {% if chore.description %}
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                {{ chore.description }}
+                            </p>
+                            {% endif %}
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                Completed by {{ chore.completed_by_username|title_case }} on {{ chore.completed_at.strftime('%B %d, %Y') }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="relative action-dropdown">
+                        <button onclick="toggleActionMenu('completed-chore-menu-{{ chore.id }}')"
+                                class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div id="completed-chore-menu-{{ chore.id }}" class="action-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-20 border border-gray-200 dark:border-gray-600">
+                            <button onclick="toggleComplete({{ chore.id }}, 'chore', this)"
+                                    class="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md transition-colors">
+                                <i class="fas fa-undo mr-2"></i>Move back to list
+                            </button>
+                            <button onclick="deleteItem({{ chore.id }}, 'chore', this)"
+                                    class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md transition-colors border-t border-gray-200 dark:border-gray-600">
+                                <i class="fas fa-trash mr-2"></i>Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

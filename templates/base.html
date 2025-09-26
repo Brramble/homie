@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Homie - Family Utility App{% endblock %}</title>
+    
+    <!-- Theme Script - Must run before any content renders -->
+    <script>
+        // Immediately apply dark mode if set, before any content renders
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Additional styles for smooth transitions -->
+    <style>
+        * {
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        
+        /* Ensure smooth theme transitions */
+        .theme-transition {
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="min-h-full">
+        {% if session.user_id %}
+        <!-- Navigation -->
+        <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 theme-transition">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <h1 class="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                                <i class="fas fa-home mr-2"></i>Homie
+                            </h1>
+                        </div>
+                        <div class="hidden md:block ml-10">
+                            <div class="flex space-x-8">
+                                <a href="{{ url_for('index') }}" class="nav-link text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium">
+                                    <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                                </a>
+                                <a href="{{ url_for('shopping_list') }}" class="nav-link text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium">
+                                    <i class="fas fa-shopping-cart mr-1"></i>Shopping
+                                </a>
+                                <a href="{{ url_for('chores') }}" class="nav-link text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium">
+                                    <i class="fas fa-tasks mr-1"></i>Chores
+                                </a>
+                                <a href="{{ url_for('expiry_tracker') }}" class="nav-link text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium">
+                                    <i class="fas fa-calendar-alt mr-1"></i>Tracker
+                                </a>
+                                <a href="{{ url_for('bills') }}" class="nav-link text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium">
+                                    <i class="fas fa-receipt mr-1"></i>Bills
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <!-- Theme Toggle -->
+                        <button id="theme-toggle" class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg">
+                            <i class="fas fa-moon dark:hidden"></i>
+                            <i class="fas fa-sun hidden dark:inline"></i>
+                        </button>
+                        
+                        <!-- User Menu -->
+                        <div class="relative">
+                            <button id="user-menu-button" class="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg p-2">
+                                <i class="fas fa-user-circle mr-2 text-lg"></i>
+                                <span>{{ session.username|title_case }}</span>
+                                <i class="fas fa-chevron-down ml-1"></i>
+                            </button>
+                            <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 theme-transition">
+                                {% if session.get('is_admin') %}
+                                <a href="{{ url_for('admin_dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md">
+                                    <i class="fas fa-crown mr-2 text-yellow-500"></i>Admin
+                                </a>
+                                <a href="{{ url_for('settings') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <i class="fas fa-cog mr-2"></i>Settings
+                                </a>
+                                {% else %}
+                                <a href="{{ url_for('settings') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md">
+                                    <i class="fas fa-cog mr-2"></i>Settings
+                                </a>
+                                {% endif %}
+                                <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md border-t border-gray-200 dark:border-gray-600">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile menu button -->
+                        <button id="mobile-menu-button" class="md:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden md:hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 dark:bg-gray-700 theme-transition">
+                    <a href="{{ url_for('index') }}" class="block px-3 py-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                    </a>
+                    <a href="{{ url_for('shopping_list') }}" class="block px-3 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                        <i class="fas fa-shopping-cart mr-2"></i>Shopping
+                    </a>
+                    <a href="{{ url_for('chores') }}" class="block px-3 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                        <i class="fas fa-tasks mr-2"></i>Chores
+                    </a>
+                    <a href="{{ url_for('expiry_tracker') }}" class="block px-3 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                        <i class="fas fa-calendar-alt mr-2"></i>Tracker
+                    </a>
+                    <a href="{{ url_for('bills') }}" class="block px-3 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                        <i class="fas fa-receipt mr-2"></i>Bills
+                    </a>
+                </div>
+            </div>
+        </nav>
+        {% endif %}
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="fixed top-20 right-4 z-50 space-y-2">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 px-4 py-3 rounded relative max-w-sm">
+                            <span class="block sm:inline">{{ message }}</span>
+                            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                <i class="fas fa-times cursor-pointer" onclick="this.parentElement.parentElement.remove()"></i>
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main Content -->
+        <main class="{% if session.user_id %}py-10{% endif %}">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

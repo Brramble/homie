@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Expiry Tracker - Homie{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+            <i class="fas fa-calendar-alt mr-3 text-yellow-600"></i>Expiry Tracker
+        </h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+            Track subscriptions, services, and anything with expiry dates.
+        </p>
+    </div>
+
+    <!-- Add Item Form -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-8">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                Add Item to Track
+            </h3>
+        </div>
+        <div class="p-6">
+            <form method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="item_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Subscription/Item Name *
+                    </label>
+                    <input type="text" name="item_name" id="item_name" required
+                           class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                           placeholder="e.g., Car Insurance, Netflix, Website Hosting">
+                </div>
+                <div>
+                    <label for="expiry_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Expiry Date *
+                    </label>
+                    <input type="date" name="expiry_date" id="expiry_date" required
+                           class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                <div class="flex items-end">
+                    <button type="submit"
+                            class="w-full px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Add Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-2xl text-red-600 dark:text-red-400"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-red-900 dark:text-red-100">Expired</h3>
+                    <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ expired_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-clock text-2xl text-yellow-600 dark:text-yellow-400"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100">Expiring Soon (30 days)</h3>
+                    <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ expiring_soon_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Items List -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                    Tracked Items
+                </h3>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ items|length }} item{{ 's' if items|length != 1 else '' }}
+                </div>
+            </div>
+        </div>
+        <div class="divide-y divide-gray-200 dark:divide-gray-700">
+            {% if items %}
+                {% for item in items %}
+                <div class="item-row p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            {% if item.days_remaining < 0 %}
+                            <div class="flex-shrink-0 h-12 w-12 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
+                            </div>
+                            {% elif item.days_remaining <= 30 %}
+                            <div class="flex-shrink-0 h-12 w-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-clock text-yellow-600 dark:text-yellow-400"></i>
+                            </div>
+                            {% else %}
+                            <div class="flex-shrink-0 h-12 w-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-calendar-check text-blue-600 dark:text-blue-400"></i>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="flex-grow">
+                                <h4 class="text-lg font-medium text-gray-900 dark:text-white">
+                                    {{ item.item_name }}
+                                </h4>
+                                <div class="flex items-center space-x-4 mt-1">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        Expires: {{ item.expiry_date.strftime('%B %d, %Y') }}
+                                    </p>
+                                    {% if item.days_remaining < 0 %}
+                                    <p class="text-sm font-medium text-red-600 dark:text-red-300">
+                                        Expired {{ (item.days_remaining|abs)|round|int }} day{{ 's' if (item.days_remaining|abs)|round|int != 1 else '' }} ago
+                                    </p>
+                                    {% elif item.days_remaining == 0 %}
+                                    <p class="text-sm font-medium text-red-600 dark:text-red-300">
+                                        Expires today!
+                                    </p>
+                                    {% elif item.days_remaining <= 30 %}
+                                    <p class="text-sm font-medium text-yellow-600 dark:text-yellow-300">
+                                        {{ item.days_remaining|round|int }} day{{ 's' if item.days_remaining|round|int != 1 else '' }} left
+                                    </p>
+                                    {% else %}
+                                    <p class="text-sm font-medium text-blue-600 dark:text-blue-300">
+                                        {{ item.days_remaining|round|int }} days left
+                                    </p>
+                                    {% endif %}
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        Added by {{ item.added_by_username|title_case }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <!-- Actions Dropdown for all devices -->
+                            <div class="relative action-dropdown">
+                                <button onclick="toggleActionMenu('expiry-menu-{{ item.id }}')"
+                                        class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div id="expiry-menu-{{ item.id }}" class="action-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-20 border border-gray-200 dark:border-gray-600">
+                                    <button onclick="deleteItem({{ item.id }}, 'expiry', this)"
+                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors">
+                                        <i class="fas fa-trash mr-2"></i>Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="p-12 text-center">
+                <i class="fas fa-calendar-alt text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    No items being tracked
+                </h3>
+                <p class="text-gray-500 dark:text-gray-400">
+                    Add your first item using the form above.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+// Set today's date as minimum for the date input
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('expiry_date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+});
+</script>
+{% endblock %}

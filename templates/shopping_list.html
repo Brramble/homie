@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping List - Homie{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+            <i class="fas fa-shopping-cart mr-3 text-blue-600"></i>Shopping List
+        </h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+            Manage your family shopping list together.
+        </p>
+    </div>
+
+    <!-- Add Item Form -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-8">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                Add New Item
+            </h3>
+        </div>
+        <div class="p-6">
+            <form method="POST" class="flex space-x-4">
+                <div class="flex-grow">
+                    <input type="text" name="item_name" required
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                           placeholder="What do you need to buy?">
+                </div>
+                <button type="submit"
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Item
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Shopping List -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                    Current Shopping List
+                </h3>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ items|length }} item{{ 's' if items|length != 1 else '' }}
+                </div>
+            </div>
+        </div>
+        <div class="divide-y divide-gray-200 dark:divide-gray-700">
+            {% if items %}
+                {% for item in items %}
+                <div class="item-row p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <button onclick="toggleComplete({{ item.id }}, 'shopping', this)"
+                                    class="flex-shrink-0 h-5 w-5 rounded border-2 {{ 'bg-green-500 border-green-500' if item.completed else 'border-gray-300 dark:border-gray-600' }} focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
+                                {% if item.completed %}
+                                <i class="fas fa-check text-white text-xs"></i>
+                                {% endif %}
+                            </button>
+                            <div class="flex-grow">
+                                <h4 class="text-lg font-medium {{ 'line-through text-gray-500 dark:text-gray-400' if item.completed else 'text-gray-900 dark:text-white' }}">
+                                    {{ item.item_name }}
+                                </h4>
+                                <div class="flex items-center space-x-4 mt-1">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        Added by {{ item.added_by_username|title_case }} 
+                                        <span class="text-xs">{{ item.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                                    </p>
+                                    {% if item.completed %}
+                                    <p class="text-sm text-green-600 dark:text-green-400">
+                                        <i class="fas fa-check-circle mr-1"></i>
+                                        Completed by {{ item.completed_by_username|title_case }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <!-- Actions Dropdown for all devices -->
+                            <div class="relative action-dropdown">
+                                <button onclick="toggleActionMenu('shopping-menu-{{ item.id }}')"
+                                        class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div id="shopping-menu-{{ item.id }}" class="action-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-20 border border-gray-200 dark:border-gray-600">
+                                    {% if not item.completed %}
+                                    <button onclick="toggleComplete({{ item.id }}, 'shopping', this)"
+                                            class="block w-full text-left px-4 py-2 text-sm text-green-600 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md transition-colors">
+                                        <i class="fas fa-check mr-2"></i>Mark Done
+                                    </button>
+                                    {% else %}
+                                    <button onclick="toggleComplete({{ item.id }}, 'shopping', this)"
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md transition-colors">
+                                        <i class="fas fa-undo mr-2"></i>Undo
+                                    </button>
+                                    {% endif %}
+                                    <button onclick="deleteItem({{ item.id }}, 'shopping', this)"
+                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md transition-colors border-t border-gray-200 dark:border-gray-600">
+                                        <i class="fas fa-trash mr-2"></i>Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="p-12 text-center">
+                <i class="fas fa-shopping-cart text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    No items in your shopping list
+                </h3>
+                <p class="text-gray-500 dark:text-gray-400">
+                    Add your first item using the form above.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if completed_items %}
+    <!-- Completed Items -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg mt-8">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <button onclick="document.getElementById('completed-section').classList.toggle('hidden')"
+                    class="flex items-center justify-between w-full text-left">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                    Recently Completed Items
+                </h3>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ completed_items|length }} completed</span>
+                    <i class="fas fa-chevron-down text-gray-400"></i>
+                </div>
+            </button>
+        </div>
+        <div id="completed-section" class="hidden divide-y divide-gray-200 dark:divide-gray-700">
+            {% for item in completed_items %}
+            <div class="item-row p-6 bg-gray-50 dark:bg-gray-700">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <button onclick="toggleComplete({{ item.id }}, 'shopping', this)"
+                                class="flex-shrink-0 h-5 w-5 rounded bg-green-500 border-green-500 flex items-center justify-center hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors cursor-pointer">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </button>
+                        <div>
+                            <h4 class="text-lg font-medium line-through text-gray-500 dark:text-gray-400">
+                                {{ item.item_name }}
+                            </h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                Completed by {{ item.completed_by_username|title_case }} on {{ item.completed_at.strftime('%B %d, %Y') }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="relative action-dropdown">
+                        <button onclick="toggleActionMenu('completed-shopping-menu-{{ item.id }}')"
+                                class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div id="completed-shopping-menu-{{ item.id }}" class="action-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-20 border border-gray-200 dark:border-gray-600">
+                            <button onclick="toggleComplete({{ item.id }}, 'shopping', this)"
+                                    class="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md transition-colors">
+                                <i class="fas fa-undo mr-2"></i>Move back to list
+                            </button>
+                            <button onclick="deleteItem({{ item.id }}, 'shopping', this)"
+                                    class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md transition-colors border-t border-gray-200 dark:border-gray-600">
+                                <i class="fas fa-trash mr-2"></i>Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

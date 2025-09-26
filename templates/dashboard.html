@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Homie{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Welcome Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+            Welcome back, {{ session.username|title_case }}!
+        </h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+            Here's what's happening in your home today.
+        </p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-shopping-cart text-2xl text-blue-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                                Shopping Items
+                            </dt>
+                            <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                                {{ shopping_count or 0 }}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+                <div class="text-sm">
+                    <a href="{{ url_for('shopping_list') }}" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                        View list
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-tasks text-2xl text-green-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                                Pending Chores
+                            </dt>
+                            <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                                {{ chores_count or 0 }}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+                <div class="text-sm">
+                    <a href="{{ url_for('chores') }}" class="font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300">
+                        View chores
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-calendar-alt text-2xl text-yellow-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                                Expiring Soon
+                            </dt>
+                            <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                                {{ expiring_count or 0 }}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+                <div class="text-sm">
+                    <a href="{{ url_for('expiry_tracker') }}" class="font-medium text-yellow-600 hover:text-yellow-500 dark:text-yellow-400 dark:hover:text-yellow-300">
+                        View calendar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-receipt text-2xl text-red-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                                Monthly Bills
+                            </dt>
+                            <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                                £{{ monthly_total or 0 }}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+                <div class="text-sm">
+                    <a href="{{ url_for('bills') }}" class="font-medium text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300">
+                        View bills
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Quick Actions -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Recent Activity -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                        Recent Activity
+                    </h3>
+                    {% if session.get('is_admin') %}
+                    <form method="POST" action="{{ url_for('clear_recent_activity') }}" class="inline">
+                        <button type="submit" 
+                                onclick="return confirm('Are you sure you want to clear all recent activity? This action cannot be undone.')"
+                                class="px-3 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors">
+                            <i class="fas fa-trash mr-1"></i>Clear
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    {% if recent_activities %}
+                        {% for activity in recent_activities %}
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0">
+                                <i class="fas {{ activity.icon }} text-gray-400"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm text-gray-900 dark:text-white">
+                                    {{ activity.description }}
+                                </p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ activity.time }}
+                                </p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-clock text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                        <p class="text-gray-500 dark:text-gray-400">No recent activity</p>
+                        <p class="text-sm text-gray-400 dark:text-gray-500">Start using the app to see updates here</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                    Quick Actions
+                </h3>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <a href="{{ url_for('shopping_list') }}" 
+                       class="group relative bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 p-4 rounded-lg transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-plus text-blue-600 dark:text-blue-400"></i>
+                            <span class="text-sm font-medium text-blue-900 dark:text-blue-300">Add Shopping Item</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ url_for('chores') }}" 
+                       class="group relative bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 p-4 rounded-lg transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-plus text-green-600 dark:text-green-400"></i>
+                            <span class="text-sm font-medium text-green-900 dark:text-green-300">Add Chore</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ url_for('expiry_tracker') }}" 
+                       class="group relative bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 p-4 rounded-lg transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-plus text-yellow-600 dark:text-yellow-400"></i>
+                            <span class="text-sm font-medium text-yellow-900 dark:text-yellow-300">Track Expiry</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ url_for('bills') }}" 
+                       class="group relative bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 p-4 rounded-lg transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-plus text-red-600 dark:text-red-400"></i>
+                            <span class="text-sm font-medium text-red-900 dark:text-red-300">Add Bill</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
