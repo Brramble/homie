@@ -26,9 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (currentlyDark) {
                 document.documentElement.classList.remove('dark');
+                document.documentElement.style.colorScheme = 'light';
                 localStorage.setItem('theme', 'light');
             } else {
                 document.documentElement.classList.add('dark');
+                document.documentElement.style.colorScheme = 'dark';
                 localStorage.setItem('theme', 'dark');
             }
             

@@ -16,9 +16,22 @@
             const theme = localStorage.getItem('theme');
             if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
+                document.documentElement.style.colorScheme = 'dark';
+            } else {
+                document.documentElement.style.colorScheme = 'light';
             }
         })();
     </script>
+    
+    <!-- Prevent flash of unstyled content by setting initial background -->
+    <style>
+        html {
+            background-color: #f9fafb; /* light mode background */
+        }
+        html.dark {
+            background-color: #111827; /* dark mode background */
+        }
+    </style>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
