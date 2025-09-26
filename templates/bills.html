@@ -4,70 +4,67 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
+    <!-- Simple Header -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-            <i class="fas fa-receipt mr-3 text-red-600"></i>Bills Manager
+            <i class="fas fa-receipt mr-3 text-blue-600"></i>Bills Manager
         </h1>
         <p class="mt-2 text-gray-600 dark:text-gray-400">
-            Track all your monthly bills and due dates.
+            Track your monthly bills and total cost
         </p>
     </div>
 
-    <!-- Monthly Summary -->
-    <div class="bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-lg p-6 mb-8">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold">Monthly Total</h2>
-                <p class="text-red-100">All your bills combined</p>
-            </div>
-            <div class="text-right">
-                <p class="text-4xl font-bold">£{{ "%.2f"|format(monthly_total or 0) }}</p>
-                <p class="text-red-100">{{ bills|length }} bill{{ 's' if bills|length != 1 else '' }}</p>
-            </div>
+    <!-- Monthly Total Card -->
+    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-8 mb-8 shadow-lg">
+        <div class="text-center">
+            <h2 class="text-2xl font-bold mb-2">Monthly Total</h2>
+            <p class="text-5xl font-bold">£{{ "%.2f"|format(monthly_total or 0) }}</p>
+            <p class="text-blue-100 mt-2">{{ bills|length }} bill{{ 's' if bills|length != 1 else '' }} tracked</p>
         </div>
     </div>
 
     <!-- Add Bill Form -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-8">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                Add New Bill
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700 mb-8">
+        <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <i class="fas fa-plus-circle mr-2 text-blue-600"></i>Add New Bill
             </h3>
         </div>
         <div class="p-6">
-            <form method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label for="bill_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Bill Name *
-                    </label>
-                    <input type="text" name="bill_name" id="bill_name" required
-                           class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                           placeholder="e.g., Electricity, Gas, Internet">
+            <form method="POST" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="bill_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Bill Name *
+                        </label>
+                        <input type="text" name="bill_name" id="bill_name" required
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                               placeholder="e.g., Electricity, Gas, Netflix">
+                    </div>
+                    <div>
+                        <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Amount (£) *
+                        </label>
+                        <input type="number" name="amount" id="amount" step="0.01" min="0" required
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                               placeholder="0.00">
+                    </div>
+                    <div>
+                        <label for="due_day" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Due Day *
+                        </label>
+                        <select name="due_day" id="due_day" required
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            <option value="">Select day</option>
+                            {% for day in range(1, 32) %}
+                            <option value="{{ day }}">{{ day }}{{ 'st' if day == 1 or day == 21 or day == 31 else ('nd' if day == 2 or day == 22 else ('rd' if day == 3 or day == 23 else 'th')) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Amount (£) *
-                    </label>
-                    <input type="number" name="amount" id="amount" step="0.01" min="0" required
-                           class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                           placeholder="0.00">
-                </div>
-                <div>
-                    <label for="due_day" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Due Day of Month *
-                    </label>
-                    <select name="due_day" id="due_day" required
-                            class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500">
-                        <option value="">Select day</option>
-                        {% for day in range(1, 32) %}
-                        <option value="{{ day }}">{{ day }}{{ 'st' if day == 1 or day == 21 or day == 31 else ('nd' if day == 2 or day == 22 else ('rd' if day == 3 or day == 23 else 'th')) }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="md:col-span-3 flex justify-end">
+                <div class="flex justify-end pt-4">
                     <button type="submit"
-                            class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors">
+                            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl">
                         <i class="fas fa-plus mr-2"></i>Add Bill
                     </button>
                 </div>
@@ -76,176 +73,136 @@
     </div>
 
     <!-- Bills List -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <button onclick="document.getElementById('bills-section').classList.toggle('hidden')"
-                    class="flex items-center justify-between w-full text-left">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                    Your Bills
-                </h3>
-                <div class="flex items-center space-x-2">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">
-                        Total: £{{ "%.2f"|format(monthly_total or 0) }}
-                    </span>
-                    <i class="fas fa-chevron-down text-gray-400"></i>
-                </div>
-            </button>
-        </div>
-        <div id="bills-section" class="divide-y divide-gray-200 dark:divide-gray-700">
-            {% if bills %}
-                {% for bill in bills %}
-                <div class="item-row p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex-shrink-0 h-12 w-12 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
-                                <i class="fas fa-receipt text-red-600 dark:text-red-400"></i>
-                            </div>
-                            <div class="flex-grow">
-                                <h4 class="text-lg font-medium text-gray-900 dark:text-white">
-                                    {{ bill.bill_name }}
-                                </h4>
-                                <div class="flex items-center space-x-4 mt-1">
-                                    <p class="text-xl font-bold text-red-600 dark:text-red-400">
-                                        £{{ "%.2f"|format(bill.amount) }}
-                                    </p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        Due: {{ bill.due_day }}{{ 'st' if bill.due_day == 1 or bill.due_day == 21 or bill.due_day == 31 else ('nd' if bill.due_day == 2 or bill.due_day == 22 else ('rd' if bill.due_day == 3 or bill.due_day == 23 else 'th')) }} of each month
-                                    </p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        Added by {{ bill.added_by_username|title_case }}
-                                    </p>
-                                    {% if bill.days_until_due is not none %}
-                                        {% if bill.days_until_due == 0 %}
-                                        <p class="text-sm font-medium text-red-600 dark:text-red-300">
-                                            <i class="fas fa-exclamation-circle mr-1"></i>Due today!
-                                        </p>
-                                        {% elif bill.days_until_due <= 3 %}
-                                        <p class="text-sm font-medium text-yellow-600 dark:text-yellow-300">
-                                            <i class="fas fa-clock mr-1"></i>Due in {{ bill.days_until_due }} day{{ 's' if bill.days_until_due != 1 else '' }}
-                                        </p>
-                                        {% elif bill.days_until_due > 0 %}
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            Due in {{ bill.days_until_due }} days
-                                        </p>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <!-- Actions Dropdown for all devices -->
-                            <div class="relative action-dropdown">
-                                <button onclick="toggleActionMenu('bill-menu-{{ bill.id }}')"
-                                        class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <div id="bill-menu-{{ bill.id }}" class="action-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-20 border border-gray-200 dark:border-gray-600">
-                                    <button onclick="editBill({{ bill.id }}, '{{ bill.bill_name }}', {{ bill.amount }}, {{ bill.due_day }})"
-                                            class="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md transition-colors">
-                                        <i class="fas fa-edit mr-2"></i>Edit
-                                    </button>
-                                    <button onclick="deleteItem({{ bill.id }}, 'bill', this)"
-                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md transition-colors border-t border-gray-200 dark:border-gray-600">
-                                        <i class="fas fa-trash mr-2"></i>Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-            <div class="p-12 text-center">
-                <i class="fas fa-receipt text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    No bills tracked yet
-                </h3>
-                <p class="text-gray-500 dark:text-gray-400">
-                    Add your first bill using the form above.
-                </p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Upcoming Bills Calendar -->
     {% if bills %}
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg mt-8">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                This Month's Due Dates
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
+        <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                Your Bills
             </h3>
         </div>
-        <div class="p-6">
-            <div class="grid grid-cols-7 gap-2">
-                {% for day in range(1, 32) %}
-                    {% set day_bills = bills|selectattr('due_day', 'equalto', day)|list %}
-                    <div class="min-h-16 p-2 border border-gray-200 dark:border-gray-600 rounded {{ 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700' if day_bills else '' }}">
-                        <div class="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                            {{ day }}
+        <div class="divide-y divide-gray-200 dark:divide-gray-700">
+            {% for bill in bills|sort(attribute='due_day') %}
+            <div class="item-row p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 h-12 w-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <i class="fas fa-receipt text-white"></i>
                         </div>
-                        {% if day_bills %}
-                        <div class="space-y-1">
-                            {% for bill in day_bills %}
-                            <div class="text-xs px-1 py-0.5 bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200 rounded">
-                                {{ bill.bill_name[:6] }}{{ '...' if bill.bill_name|length > 6 else '' }}
-                            </div>
-                            {% endfor %}
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                {{ bill.bill_name }}
+                            </h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                Due: {{ bill.due_day }}{{ 'st' if bill.due_day == 1 or bill.due_day == 21 or bill.due_day == 31 else ('nd' if bill.due_day == 2 or bill.due_day == 22 else ('rd' if bill.due_day == 3 or bill.due_day == 23 else 'th')) }} of each month
+                            </p>
                         </div>
-                        {% endif %}
                     </div>
-                {% endfor %}
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                                £{{ "%.2f"|format(bill.amount) }}
+                            </p>
+                        </div>
+                        <!-- Actions Dropdown -->
+                        <div class="relative action-dropdown">
+                            <button onclick="toggleActionMenu('bill-menu-{{ bill.id }}')"
+                                    class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="bill-menu-{{ bill.id }}" class="action-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 z-20 border border-gray-200 dark:border-gray-600">
+                                <button onclick="editBill({{ bill.id }}, '{{ bill.bill_name }}', {{ bill.amount }}, {{ bill.due_day }})"
+                                        class="block w-full text-left px-4 py-3 text-sm text-blue-600 dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg transition-colors">
+                                    <i class="fas fa-edit mr-2"></i>Edit Bill
+                                </button>
+                                <button onclick="deleteBill({{ bill.id }}, this)"
+                                        class="block w-full text-left px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-b-lg transition-colors border-t border-gray-200 dark:border-gray-600">
+                                    <i class="fas fa-trash mr-2"></i>Delete Bill
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            {% endfor %}
         </div>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-16">
+        <div class="bg-gray-100 dark:bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-receipt text-4xl text-gray-400"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            No bills tracked yet
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+            Start tracking your monthly bills by adding your first bill above.
+        </p>
+        <button onclick="document.getElementById('bill_name').focus()" 
+                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+            <i class="fas fa-plus mr-2"></i>Add Your First Bill
+        </button>
     </div>
     {% endif %}
 </div>
 
-<!-- Edit Bill Modal -->
-<div id="editBillModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800">
-        <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Edit Bill</h3>
-            <form id="editBillForm" method="POST" action="/edit_bill">
-                <input type="hidden" id="editBillId" name="bill_id">
-                <div class="space-y-4">
+<!-- Simple Edit Bill Modal -->
+<div id="editBillModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+    <div class="relative mx-auto p-0 border-0 w-full max-w-lg shadow-2xl rounded-xl bg-white dark:bg-gray-800 m-4">
+        <div class="relative">
+            <!-- Modal Header -->
+            <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-xl">
+                <h3 class="text-xl font-semibold">
+                    <i class="fas fa-edit mr-2"></i>Edit Bill
+                </h3>
+                <button onclick="closeEditModal()" class="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6">
+                <form id="editBillForm" method="POST" action="/edit_bill" class="space-y-4">
+                    <input type="hidden" id="editBillId" name="bill_id">
                     <div>
-                        <label for="editBillName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <label for="editBillName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Bill Name *
                         </label>
                         <input type="text" id="editBillName" name="bill_name" required
-                               class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                     </div>
                     <div>
-                        <label for="editAmount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <label for="editAmount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Amount (£) *
                         </label>
                         <input type="number" id="editAmount" name="amount" step="0.01" min="0" required
-                               class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                     </div>
                     <div>
-                        <label for="editDueDay" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <label for="editDueDay" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Due Day of Month *
                         </label>
                         <select id="editDueDay" name="due_day" required
-                                class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                             {% for day in range(1, 32) %}
                             <option value="{{ day }}">{{ day }}{{ 'st' if day == 1 or day == 21 or day == 31 else ('nd' if day == 2 or day == 22 else ('rd' if day == 3 or day == 23 else 'th')) }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                </div>
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="closeEditModal()"
-                            class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        Update Bill
-                    </button>
-                </div>
-            </form>
+                    
+                    <!-- Modal Actions -->
+                    <div class="flex justify-end space-x-3 pt-6">
+                        <button type="button" onclick="closeEditModal()"
+                                class="px-6 py-3 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors font-medium">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-lg">
+                            <i class="fas fa-save mr-2"></i>Update Bill
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -268,6 +225,133 @@ document.getElementById('editBillModal').addEventListener('click', function(e) {
     if (e.target === this) {
         closeEditModal();
     }
+});
+
+// Animate number counting up
+function animateCountUp(element, start, end, duration = 1500) {
+    const startTime = performance.now();
+    const difference = end - start;
+    
+    function updateCount(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function for smooth animation
+        const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+        const current = start + (difference * easeOutCubic);
+        
+        element.textContent = '£' + current.toFixed(2);
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateCount);
+        }
+    }
+    
+    requestAnimationFrame(updateCount);
+}
+
+// Calculate current total from DOM
+function calculateCurrentTotal() {
+    const billElements = document.querySelectorAll('.item-row');
+    let total = 0;
+    
+    billElements.forEach(row => {
+        const amountText = row.querySelector('.text-2xl.font-bold').textContent;
+        const amount = parseFloat(amountText.replace('£', ''));
+        if (!isNaN(amount)) {
+            total += amount;
+        }
+    });
+    
+    return total;
+}
+
+// Update monthly total display
+function updateMonthlyTotal(newTotal = null) {
+    const totalElement = document.querySelector('.text-5xl.font-bold');
+    const countElement = document.querySelector('.text-blue-100');
+    
+    if (!totalElement) return;
+    
+    const currentDisplayed = parseFloat(totalElement.textContent.replace('£', '')) || 0;
+    const actualTotal = newTotal !== null ? newTotal : calculateCurrentTotal();
+    const billCount = document.querySelectorAll('.item-row').length;
+    
+    // Animate the count up/down
+    animateCountUp(totalElement, currentDisplayed, actualTotal, 800);
+    
+    // Update bill count
+    setTimeout(() => {
+        countElement.textContent = `${billCount} bill${billCount !== 1 ? 's' : ''} tracked`;
+    }, 400);
+}
+
+// Override the deleteItem function for bills to trigger recount
+function deleteBill(billId, element) {
+    if (confirm('Are you sure you want to delete this bill?')) {
+        // Get the amount before deletion for smooth animation
+        const billRow = element.closest('.item-row');
+        const amountText = billRow.querySelector('.text-2xl.font-bold').textContent;
+        const deletedAmount = parseFloat(amountText.replace('£', ''));
+        
+        fetch(`/delete_bill/${billId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Animate the row removal
+                billRow.style.transition = 'all 0.3s ease';
+                billRow.style.opacity = '0';
+                billRow.style.transform = 'translateX(-100%)';
+                
+                setTimeout(() => {
+                    billRow.remove();
+                    // Trigger total recount animation
+                    updateMonthlyTotal();
+                    
+                    // Show empty state if no bills left
+                    if (document.querySelectorAll('.item-row').length === 0) {
+                        location.reload(); // Reload to show empty state
+                    }
+                }, 300);
+            } else {
+                alert('Error deleting bill');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting bill');
+        });
+    }
+}
+
+// Simple animations
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate cards appearing
+    const cards = document.querySelectorAll('.bg-white, .bg-gradient-to-r');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+    
+    // Animate the monthly total counting up on page load
+    setTimeout(() => {
+        const totalElement = document.querySelector('.text-5xl.font-bold');
+        if (totalElement) {
+            const finalTotal = parseFloat(totalElement.textContent.replace('£', ''));
+            totalElement.textContent = '£0.00';
+            animateCountUp(totalElement, 0, finalTotal, 1500);
+        }
+    }, 500);
 });
 </script>
 {% endblock %}
