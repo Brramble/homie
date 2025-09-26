@@ -97,9 +97,35 @@
             }
             
             /* Adjust for status bar in standalone mode */
-            body {
+            nav {
                 padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
+            }
+            
+            /* Ensure dropdowns work properly in PWA mode */
+            .relative {
+                position: relative;
+                z-index: 10;
+            }
+            
+            /* Fix dropdown positioning in PWA */
+            nav .absolute {
+                position: fixed !important;
+            }
+        }
+        
+        /* iOS specific fixes for PWA */
+        @supports (-webkit-touch-callout: none) {
+            @media all and (display-mode: standalone) {
+                /* Ensure touch events work properly */
+                button, .btn, a[role="button"] {
+                    cursor: pointer;
+                    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+                }
+                
+                /* Fix dropdown z-index issues */
+                nav .absolute {
+                    z-index: 9999 !important;
+                }
             }
         }
     </style>
@@ -140,7 +166,7 @@
     <div class="min-h-full">
         {% if session.user_id %}
         <!-- Navigation -->
-        <nav class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 theme-transition">
+        <nav class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 theme-transition">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
@@ -244,7 +270,7 @@
         {% endwith %}
 
         <!-- Main Content -->
-        <main class="{% if session.user_id %}py-10{% endif %}">
+        <main class="{% if session.user_id %}pt-20 pb-10{% endif %}">
             {% block content %}{% endblock %}
         </main>
     </div>

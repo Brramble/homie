@@ -1,4 +1,4 @@
-// Theme toggle functionality
+// Theme toggle functionality and menu handling
 document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('theme-toggle');
     const userMenuButton = document.getElementById('user-menu-button');
@@ -6,21 +6,100 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
 
-    // Theme is already applied in the    // Toggle clicked menu
-    if (isHidden) {
-        menu.classList.remove('hidden');
-    } else {
-        menu.classList.add('hidden');
-    }
-}
+    // Check if running in iOS PWA mode
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+    const isIOSPWA = isIOS && isInStandaloneMode;
 
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    if (!event.target.closest('.action-dropdown')) {
-        document.querySelectorAll('.action-menu').forEach(menu => {
-            menu.classList.add('hidden');
-        });
+    // Theme toggle
+    if (themeToggle) {
+        // Set initial state of toggle based on current theme
+        const updateToggleState = () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            themeToggle.setAttribute('aria-checked', isDark ? 'true' : 'false');
+        };
+        
+        // Set initial state
+        updateToggleState();
+        
+        const toggleTheme = function() {
+            const currentlyDark = document.documentElement.classList.contains('dark');
+            
+            if (currentlyDark) {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.style.colorScheme = 'light';
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.documentElement.style.colorScheme = 'dark';
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            updateToggleState();
+        };
+
+        // Use both click and touchend for iOS compatibility
+        themeToggle.addEventListener('click', toggleTheme);
+        if (isIOSPWA) {
+            themeToggle.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                toggleTheme();
+            });
+        }
     }
+
+    // User menu toggle with iOS PWA support
+    if (userMenuButton && userMenu) {
+        const toggleUserMenu = function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            userMenu.classList.toggle('hidden');
+        };
+
+        userMenuButton.addEventListener('click', toggleUserMenu);
+        
+        // For iOS PWA, also listen to touchend
+        if (isIOSPWA) {
+            userMenuButton.addEventListener('touchend', toggleUserMenu);
+        }
+
+        // Close user menu when clicking/touching outside
+        const closeUserMenu = function(e) {
+            if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
+                userMenu.classList.add('hidden');
+            }
+        };
+
+        document.addEventListener('click', closeUserMenu);
+        if (isIOSPWA) {
+            document.addEventListener('touchend', closeUserMenu);
+        }
+    }
+
+    // Mobile menu toggle
+    if (mobileMenuButton && mobileMenu) {
+        const toggleMobileMenu = function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            mobileMenu.classList.toggle('hidden');
+        };
+
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        
+        if (isIOSPWA) {
+            mobileMenuButton.addEventListener('touchend', toggleMobileMenu);
+        }
+    }
+
+    // Auto-hide flash messages after 5 seconds
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateX(100%)';
+            setTimeout(() => alert.remove(), 300);
+        }, 5000);
+    });
 });
 
 // iOS PWA and WebKit Support
@@ -592,11 +671,20 @@ function toggleActionMenu(menuId) {
     }
 }
 
-// Close dropdowns when clicking outside
-document.addEventListener('click', function(event) {
+// Close dropdowns when clicking outside - with iOS PWA support
+const closeActionMenus = function(event) {
     if (!event.target.closest('.action-dropdown')) {
         document.querySelectorAll('.action-menu').forEach(menu => {
             menu.classList.add('hidden');
         });
     }
-});
+};
+
+document.addEventListener('click', closeActionMenus);
+
+// For iOS PWA, also listen to touchend events
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+if (isIOS && isInStandaloneMode) {
+    document.addEventListener('touchend', closeActionMenus);
+}

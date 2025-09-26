@@ -3,8 +3,8 @@ services:
     build: .
     container_name: homie
     restart: unless-stopped
-    ports:
-      - "5000:5000"
+    #ports:
+      #- "5000:5000"
     volumes:
       # Mount for persistent SQLite database
       - ./data:/app/data
