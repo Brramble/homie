@@ -1,0 +1,24 @@
+services:
+  homie:
+    build: .
+    container_name: homie
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount for persistent SQLite database
+      - ./data:/app/data
+      # Mount the database file to persist data
+      - ./homie.db:/app/homie.db
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homie.rule=Host(`homie.camc.xyz`)"
+      - "traefik.http.services.homie.loadbalancer.server.port=5000"
+
+networks:
+  default:
+    name: proxy
+    external: true
