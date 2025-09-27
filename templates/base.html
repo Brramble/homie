@@ -204,19 +204,7 @@
                                 <i class="fas fa-chevron-down ml-1"></i>
                             </button>
                             <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 theme-transition">
-                                {% if session.get('is_admin') %}
-                                <a href="{{ url_for('admin_dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md">
-                                    <i class="fas fa-crown mr-2 text-yellow-500"></i>Admin
-                                </a>
-                                <a href="{{ url_for('settings') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <i class="fas fa-cog mr-2"></i>Settings
-                                </a>
-                                {% else %}
-                                <a href="{{ url_for('settings') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md">
-                                    <i class="fas fa-cog mr-2"></i>Settings
-                                </a>
-                                {% endif %}
-                                <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md border-t border-gray-200 dark:border-gray-600">
+                                <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
                                     <i class="fas fa-sign-out-alt mr-2"></i>Logout
                                 </a>
                             </div>

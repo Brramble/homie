@@ -22,7 +22,7 @@
             </h3>
         </div>
         <div class="p-6">
-            <form method="POST" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+            <form method="POST" action="{{ url_for('add_shopping_item') }}" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <div class="flex-grow">
                     <input type="text" name="item_name" required
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
@@ -67,7 +67,7 @@
                                 <div class="flex items-center space-x-4 mt-1">
                                     <p class="text-sm text-gray-500 dark:text-gray-400">
                                         Added by {{ item.added_by_username|title_case }} 
-                                        <span class="text-xs">{{ item.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                                        <span class="text-xs">{{ item.created_at|format_date('%B %d, %Y at %I:%M %p') }}</span>
                                     </p>
                                     {% if item.completed %}
                                     <p class="text-sm text-green-600 dark:text-green-400">
@@ -135,15 +135,6 @@
                 </button>
                 <div class="flex items-center space-x-4">
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ completed_items|length }} completed</span>
-                    {% if completed_items %}
-                    <form method="POST" action="{{ url_for('delete_all_completed_shopping') }}" class="inline">
-                        <button type="submit" 
-                                onclick="return confirm('Are you sure you want to delete all completed shopping items? This action cannot be undone.')"
-                                class="px-3 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors">
-                            <i class="fas fa-trash mr-1"></i>Delete All
-                        </button>
-                    </form>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -161,7 +152,7 @@
                                 {{ item.item_name }}
                             </h4>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Completed by {{ item.completed_by_username|title_case }} on {{ item.completed_at.strftime('%B %d, %Y') }}
+                                Completed by {{ item.completed_by_username|title_case }} on {{ item.completed_at|format_date }}
                             </p>
                         </div>
                     </div>

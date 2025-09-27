@@ -359,7 +359,7 @@ function moveItemToCompletedSection(itemId, itemData, itemRow) {
                             ${itemData.item_name}
                         </h4>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Completed by ${itemData.completed_by_username} on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            Completed by ${itemData.completed_by_username || 'Unknown'} on ${itemData.completed_at ? new Date(itemData.completed_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown date'}
                         </p>
                     </div>
                 </div>
@@ -412,7 +412,7 @@ function moveItemToActiveList(itemId, itemData, itemRow) {
                             ${itemData.item_name}
                         </h4>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Added by ${itemData.added_by_username} on ${new Date(itemData.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            Added by ${itemData.added_by_username || 'Unknown'} on ${itemData.created_at ? new Date(itemData.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown date'}
                         </p>
                     </div>
                 </div>
@@ -523,7 +523,7 @@ function moveChoreToCompletedSection(choreId, choreData, choreRow) {
                         </h4>
                         ${choreData.description ? `<p class="text-sm text-gray-400 dark:text-gray-500 line-through">${choreData.description}</p>` : ''}
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Completed by ${choreData.completed_by_username ? choreData.completed_by_username.charAt(0).toUpperCase() + choreData.completed_by_username.slice(1) : 'Unknown'} on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            Completed by ${choreData.completed_by_username ? choreData.completed_by_username.charAt(0).toUpperCase() + choreData.completed_by_username.slice(1) : 'Unknown'} on ${choreData.completed_at ? new Date(choreData.completed_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown date'}
                         </p>
                     </div>
                 </div>

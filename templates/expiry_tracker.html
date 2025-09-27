@@ -22,7 +22,7 @@
             </h3>
         </div>
         <div class="p-6">
-            <form method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <form method="POST" action="{{ url_for('add_expiry_item') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label for="item_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Subscription/Item Name *
@@ -112,7 +112,7 @@
                                 </h4>
                                 <div class="flex items-center space-x-4 mt-1">
                                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        Expires: {{ item.expiry_date.strftime('%B %d, %Y') }}
+                                        Expires: {{ item.expiry_date|format_date }}
                                     </p>
                                     {% if item.days_remaining < 0 %}
                                     <p class="text-sm font-medium text-red-600 dark:text-red-300">

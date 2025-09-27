@@ -22,7 +22,7 @@
             </h3>
         </div>
         <div class="p-6">
-            <form method="POST" class="space-y-4">
+            <form method="POST" action="{{ url_for('add_chore') }}" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="chore_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -71,13 +71,13 @@
                     Current Chores
                 </h3>
                 <div class="text-sm text-gray-500 dark:text-gray-400 chores-item-counter">
-                    {{ chores|length }} chore{{ 's' if chores|length != 1 else '' }}
+                    {{ pending_chores|length }} chore{{ 's' if pending_chores|length != 1 else '' }}
                 </div>
             </div>
         </div>
         <div class="divide-y divide-gray-200 dark:divide-gray-700">
-            {% if chores %}
-                {% for chore in chores %}
+            {% if pending_chores %}
+                {% for chore in pending_chores %}
                 <div class="item-row p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     <div class="flex items-start justify-between">
                         <div class="flex items-start space-x-4">
@@ -99,7 +99,7 @@
                                 <div class="flex items-center space-x-4 mt-2">
                                     <p class="text-sm text-gray-500 dark:text-gray-400">
                                         Added by {{ chore.added_by_username|title_case }}
-                                        <span class="text-xs">{{ chore.created_at.strftime('%B %d, %Y') }}</span>
+                                        <span class="text-xs">{{ chore.created_at|format_date }}</span>
                                     </p>
                                     {% if chore.assigned_to %}
                                     <p class="text-sm text-blue-600 dark:text-blue-400">
@@ -179,16 +179,7 @@
                         <i class="fas fa-chevron-down text-gray-400"></i>
                     </div>
                 </button>
-                {% if completed_chores %}
-                <form method="POST" action="{{ url_for('delete_all_completed_chores') }}" class="inline">
-                    <button type="submit" 
-                            onclick="return confirm('Are you sure you want to delete all completed chores? This action cannot be undone.')"
-                            class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors duration-200"
-                            title="Delete all completed chores">
-                        <i class="fas fa-trash-alt mr-1"></i>Delete All
-                    </button>
-                </form>
-                {% endif %}
+
             </div>
         </div>
         <div id="completed-chores-section" class="hidden divide-y divide-gray-200 dark:divide-gray-700">
@@ -210,7 +201,7 @@
                             </p>
                             {% endif %}
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                Completed by {{ chore.completed_by_username|title_case }} on {{ chore.completed_at.strftime('%B %d, %Y') }}
+                                Completed by {{ chore.completed_by_username|title_case }} on {{ chore.completed_at|format_date }}
                             </p>
                         </div>
                     </div>

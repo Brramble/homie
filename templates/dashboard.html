@@ -130,20 +130,9 @@
         <!-- Recent Activity -->
         <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                        Recent Activity
-                    </h3>
-                    {% if session.get('is_admin') %}
-                    <form method="POST" action="{{ url_for('clear_recent_activity') }}" class="inline">
-                        <button type="submit" 
-                                onclick="return confirm('Are you sure you want to clear all recent activity? This action cannot be undone.')"
-                                class="px-3 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors">
-                            <i class="fas fa-trash mr-1"></i>Clear
-                        </button>
-                    </form>
-                    {% endif %}
-                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                    Recent Activity
+                </h3>
             </div>
             <div class="p-6">
                 <div class="space-y-4">
@@ -174,53 +163,7 @@
             </div>
         </div>
 
-        <!-- Members List -->
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                    <i class="fas fa-users mr-2 text-blue-600"></i>Members
-                </h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ users|length }} member{{ 's' if users|length != 1 else '' }} in your home</p>
-            </div>
-            <div class="p-6">
-                {% if users %}
-                <div class="space-y-4">
-                    {% for user in users %}
-                    <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                        <div class="flex items-center space-x-3">
-                            <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <span class="text-white font-semibold text-sm">
-                                    {{ user.username[0]|upper }}
-                                </span>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-900 dark:text-white">
-                                    {{ user.username|title_case }}
-                                    {% if user.username == session.username %}<span class="text-xs text-blue-600 dark:text-blue-400 ml-2">(You)</span>{% endif %}
-                                </p>
-                                <p class="text-sm {{ 'text-green-600 dark:text-green-400' if user.status == 'online' else 'text-gray-500 dark:text-gray-400' }}">
-                                    {{ user.status_text }}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            {% if user.status == 'online' %}
-                            <div class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-                            {% else %}
-                            <div class="h-2 w-2 bg-gray-400 rounded-full"></div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <div class="text-center py-8">
-                    <i class="fas fa-users text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
-                    <p class="text-gray-500 dark:text-gray-400">No members found</p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+
     </div>
 </div>
 
