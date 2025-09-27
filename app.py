@@ -16,16 +16,40 @@ load_dotenv()
 # Configuration
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
 
+def discover_oidc_endpoints(issuer):
+    """Auto-discover OIDC endpoints from issuer's well-known configuration"""
+    try:
+        well_known_url = f"{issuer}/.well-known/openid-configuration"
+        response = requests.get(well_known_url, timeout=10)
+        response.raise_for_status()
+        config = response.json()
+        
+        return {
+            'authorization_endpoint': config.get('authorization_endpoint'),
+            'token_endpoint': config.get('token_endpoint'),
+            'userinfo_endpoint': config.get('userinfo_endpoint'),
+            'end_session_endpoint': config.get('end_session_endpoint'),
+        }
+    except Exception as e:
+        print(f"Failed to discover OIDC endpoints: {e}")
+        # Fallback to manual configuration
+        return {
+            'authorization_endpoint': os.getenv('OIDC_AUTHORIZATION_ENDPOINT'),
+            'token_endpoint': os.getenv('OIDC_TOKEN_ENDPOINT'),
+            'userinfo_endpoint': os.getenv('OIDC_USERINFO_ENDPOINT'),
+            'end_session_endpoint': os.getenv('OIDC_END_SESSION_ENDPOINT'),
+        }
+
 # OIDC Configuration
+issuer = os.getenv('OIDC_ISSUER')
+oidc_endpoints = discover_oidc_endpoints(issuer) if issuer else {}
+
 OIDC_CONFIG = {
     'client_id': os.getenv('OIDC_CLIENT_ID'),
     'client_secret': os.getenv('OIDC_CLIENT_SECRET'),
-    'issuer': os.getenv('OIDC_ISSUER'),
+    'issuer': issuer,
     'redirect_uri': os.getenv('OIDC_REDIRECT_URI'),
-    'authorization_endpoint': os.getenv('OIDC_AUTHORIZATION_ENDPOINT'),
-    'token_endpoint': os.getenv('OIDC_TOKEN_ENDPOINT'),
-    'userinfo_endpoint': os.getenv('OIDC_USERINFO_ENDPOINT'),
-    'end_session_endpoint': os.getenv('OIDC_END_SESSION_ENDPOINT'),
+    **oidc_endpoints
 }
 
 # Access Control
