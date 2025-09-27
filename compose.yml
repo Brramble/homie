@@ -10,6 +10,8 @@ services:
       - ./data:/app/data
       # Mount the database file to persist data
       - ./homie.db:/app/homie.db
+    env_file:
+      - .env
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
