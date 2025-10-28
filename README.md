@@ -11,6 +11,14 @@ A simple family utility app for managing household tasks with OIDC authenticatio
 - 🔐 **OIDC Auth** - Group-based access control
 - 📱 **Mobile Friendly** - Responsive design
 
+## Showcase
+
+<img width="1281" height="676" alt="image" src="https://github.com/user-attachments/assets/07cf8647-6d5f-420f-ab0e-2c7bf55b7265" />
+
+<img width="1317" height="795" alt="image" src="https://github.com/user-attachments/assets/a14bf3cc-52e5-428c-9a63-4b9be12af3a7" />
+
+
+
 ## Quick Start
 
 1. **Install dependencies:**
