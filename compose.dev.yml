@@ -15,12 +15,3 @@ services:
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.homie.rule=Host(`homie.camc.xyz`)"
-      - "traefik.http.services.homie.loadbalancer.server.port=5000"
-
-networks:
-  default:
-    name: proxy
-    external: true
